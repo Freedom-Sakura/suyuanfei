@@ -1,36 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>简单猜数字游戏</title>
+    <title>点击方块游戏</title>
     <style>
-        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
-        input, button { padding: 8px; font-size: 16px; }
+        body { text-align: center; font-family: Arial; }
+        #game { width: 400px; height: 300px; margin: 0 auto; position: relative; border: 1px solid #000; }
+        .block { width: 50px; height: 50px; background-color: red; position: absolute; cursor: pointer; }
+        #score { font-size: 24px; margin-bottom: 20px; }
     </style>
 </head>
 <body>
-    <h1>猜数字游戏</h1>
-    <p>我已经想好了一个1-100之间的数字，试试猜出来吧！</p>
-    <input type="number" id="guess" min="1" max="100">
-    <button onclick="checkGuess()">猜一猜</button>
-    <p id="message"></p>
+    <h1>点击方块游戏</h1>
+    <div id="score">分数: 0</div>
+    <div id="game"></div>
 
     <script>
-        const secret = Math.floor(Math.random() * 100) + 1;
-        let attempts = 0;
+        let score = 0;
+        const game = document.getElementById('game');
+        const scoreDisplay = document.getElementById('score');
         
-        function checkGuess() {
-            const guess = parseInt(document.getElementById('guess').value);
-            attempts++;
+        function createBlock() {
+            const block = document.createElement('div');
+            block.className = 'block';
             
-            if (isNaN(guess)) {
-                document.getElementById('message').textContent = "请输入有效数字！";
-            } else if (guess === secret) {
-                document.getElementById('message').textContent = `恭喜！你用了${attempts}次猜中了！`;
-            } else {
-                document.getElementById('message').textContent = 
-                    `不对，数字比${guess}要${guess > secret ? '小' : '大'}。再试一次！`;
-            }
+            // 随机位置
+            const x = Math.random() * (game.offsetWidth - 50);
+            const y = Math.random() * (game.offsetHeight - 50);
+            
+            block.style.left = x + 'px';
+            block.style.y = y + 'px';
+            
+            // 点击事件
+            block.addEventListener('click', () => {
+                score++;
+                scoreDisplay.textContent = `分数: ${score}`;
+                game.removeChild(block);
+                createBlock();
+            });
+            
+            game.appendChild(block);
+            
+            // 3秒后消失
+            setTimeout(() => {
+                if (block.parentNode === game) {
+                    game.removeChild(block);
+                    createBlock();
+                }
+            }, 1000);
         }
+        
+        // 开始游戏
+        createBlock();
     </script>
 </body>
 </html>
